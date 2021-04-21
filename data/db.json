@@ -1,18 +1,19 @@
-
-[
-  {
-    "name": "Ali Zafer",
-    "title": "Tu hi hai",
-    "year": "2003"
-  },
-  {
-    "name": "Atif",
-    "title": "Tera honay laga hun",
-    "year": "2008"
-  },
-  {
-    "name": "Hadika",
-    "title": "Raqeeb Se",
-    "year": "2021"
-  }
-]
+{
+  "records": [
+    {
+      "name": "Ali Zafer",
+      "title": "Tu hi hai",
+      "year": "2003"
+    },
+    {
+      "name": "Atif",
+      "title": "Tera honay laga hun",
+      "year": "2008"
+    },
+    {
+      "name": "Hadika",
+      "title": "Raqeeb Se",
+      "year": "2021"
+    }
+  ]
+}
