@@ -4,6 +4,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const { MongoClient } = require("mongodb");
+require("dotenv").config();
 /** ROUTERS */
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
@@ -15,11 +16,14 @@ const app = express();
 
 /** LOGGING */
 app.use(logger("dev"));
+//ENV variable
+const dBURL = process.env.DB_URL;
+const dBPassword = process.env.DB_PASSWORD;
+const dBUser = process.env.DB_USER;
 
 // Connect to mongodb
 async function connectDB() {
-  const url =
-    "mongodb+srv://dbUser:BaeDW7JEpn2eRq6I@cluster0.qykt1.mongodb.net/records-shop?retryWrites=true&w=majority";
+  const url = `mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`;
   const client = new MongoClient(url);
 
   try {
