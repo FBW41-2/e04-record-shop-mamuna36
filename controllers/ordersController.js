@@ -5,7 +5,7 @@
 const mongodb = require("mongodb");
 // get all orders
 exports.getOrders = (req, res, next) => {
-  // access db from global object   // select all records
+  // access db from global object
   req.app.locals.db
     .collection("orders")
     .find()
@@ -36,9 +36,18 @@ exports.deleteOrder = (req, res, next) => {
 // update one order
 exports.updateOrder = (req, res, next) => {
   const { id } = req.params;
-  const dt = req.body;
-  const order = db.get("orders").find({ id }).assign(dt).write();
-  res.status(200).send(order);
+  req.app.locals.db.collection("orders").updateOne(
+    // filter
+    { _id: new mongodb.ObjectID(id) },
+    // new data
+    {
+      $set: req.body,
+    },
+    // callback function
+    (err, entry) => {
+      res.json(entry);
+    }
+  );
 };
 // adding one order
 exports.addOrder = (req, res, next) => {
