@@ -1,46 +1,55 @@
-const low = require("lowdb");
-const FileSync = require("lowdb/adapters/FileSync");
-const adapter = new FileSync("data/db.json");
-const db = low(adapter);
-
-exports.getOrders = (req, res, next) => {
-  const orders = db.get("orders").value();
-  res.status(200).send(orders);
+const Record = require("../models/recordsModel");
+// get all records
+exports.getRecords = (req, res, next) => {
+  // access db from global object   // select all records
+  Record.find((err, records) => {
+    if (err) return console.error(err);
+    res.json(records);
+  });
 };
 
-exports.getOrder = (req, res, next) => {
+// get specific record
+exports.getRecord = (req, res, next) => {
   const { id } = req.params;
-  const order = db.get("orders").find({ id });
-  res.status(200).send(order);
+  Record.findById(id, (err, entry) => {
+    if (err) return res.json({ error: err });
+    res.json(entry);
+  });
 };
 
-exports.deleteOrder = (req, res, next) => {
+// delete one record
+exports.deleteRecord = (req, res, next) => {
   const { id } = req.params;
-  const order = db
-    .get("orders")
-    .remove({ id })
-    .write();
-  res.status(200).send(order);
+  Record.findByIdAndRemove(id, (err, entry) => {
+    if (err) return res.json({ error: err });
+    res.json({ deleted: entry });
+  });
 };
 
-exports.updateOrder = (req, res, next) => {
+// update one record
+exports.updateRecord = (req, res, next) => {
   const { id } = req.params;
-  const dt = req.body;
-  const order = db
-    .get("orders")
-    .find({ id })
-    .assign(dt)
-    .write();
-  res.status(200).send(order);
+  Record.findByIdAndUpdate(
+    id,
+    { year: "2010" },
+    { new: true },
+    (err, entry) => {
+      if (err) return res.json({ error: err });
+      res.json(entry);
+    }
+  );
 };
 
-exports.addOrder = (req, res, next) => {
-  const order = req.body;
-  db.get("orders")
-    .push(order)
-    .last()
-    .assign({ id: Date.now().toString() })
-    .write();
+// create new record
+exports.addRecord = (req, res, next) => {
+  // create new record
 
-  res.status(200).send(order);
+  // const newRecord = new Record(req.body);
+  // newRecord.save((err, entry) => {
+  //   if (err) return console.error(err);
+  //   res.json(entry);
+  Record.create(req.body, (err, entry) => {
+    if (err) return console.error(err);
+    res.json(entry);
+  });
 };
