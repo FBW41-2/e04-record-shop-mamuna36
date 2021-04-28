@@ -1,37 +1,37 @@
-const Record = require("../models/recordsModel");
-// get all records
-exports.getRecords = (req, res, next) => {
+const User = require("../models/User");
+// get all users
+exports.getUsers = (req, res, next) => {
   // access db from global object   // select all records
-  Record.find((err, records) => {
+  User.find((err, records) => {
     if (err) return console.error(err);
     res.json(records);
   });
 };
 
-// get specific record
-exports.getRecord = (req, res, next) => {
+// get specific user
+exports.getUser = (req, res, next) => {
   const { id } = req.params;
-  Record.findById(id, (err, entry) => {
+  User.findById(id, (err, entry) => {
     if (err) return res.json({ error: err });
     res.json(entry);
   });
 };
 
-// delete one record
-exports.deleteRecord = (req, res, next) => {
+// delete one user
+exports.deleteUser = (req, res, next) => {
   const { id } = req.params;
-  Record.findByIdAndRemove(id, (err, entry) => {
+  User.findByIdAndRemove(id, (err, entry) => {
     if (err) return res.json({ error: err });
     res.json({ deleted: entry });
   });
 };
 
-// update one record
-exports.updateRecord = (req, res, next) => {
+// update one user
+exports.updateUser = (req, res, next) => {
   const { id } = req.params;
-  Record.findByIdAndUpdate(
+  User.findByIdAndUpdate(
     id,
-    { year: "2010" },
+    { lastName: "Smith" },
     { new: true },
     (err, entry) => {
       if (err) return res.json({ error: err });
@@ -40,15 +40,10 @@ exports.updateRecord = (req, res, next) => {
   );
 };
 
-// create new record
-exports.addRecord = (req, res, next) => {
+// create new user
+exports.addUser = (req, res, next) => {
   // create new record
-
-  // const newRecord = new Record(req.body);
-  // newRecord.save((err, entry) => {
-  //   if (err) return console.error(err);
-  //   res.json(entry);
-  Record.create(req.body, (err, entry) => {
+  User.create(req.body, (err, entry) => {
     if (err) return console.error(err);
     res.json(entry);
   });
