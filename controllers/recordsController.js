@@ -2,10 +2,24 @@ const Record = require("../models/Record");
 // get all records
 exports.getRecords = (req, res, next) => {
   // access db from global object   // select all records
-  Record.find((err, records) => {
-    if (err) return console.error(err);
-    res.json(records);
-  });
+  const {
+    pageNumber,
+    recordsPerPage,
+    sortOrder,
+    sortField,
+    search,
+    searchField,
+  } = req.query;
+  Record.find(
+    { [searchField]: { $regex: search || "", $options: "i" } },
+    (err, records) => {
+      if (err) return console.error(err);
+      res.json(records);
+    }
+  )
+    .limit(Number(recordsPerPage))
+    .skip(pageNumber * recordsPerPage)
+    .sort({ [sortField]: sortOrder });
 };
 
 // get specific record

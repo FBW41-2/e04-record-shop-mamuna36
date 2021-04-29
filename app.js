@@ -22,7 +22,7 @@ app.use(logger("dev"));
 
 /** ENV VARIABLES **/
 const dBURL = process.env.DB_URL;
-const dBPassword = process.env.DB_PASS;
+const dBPassword = process.env.DB_PASSWORD;
 const dBUser = process.env.DB_USER;
 
 /**CONNECT TO DB */

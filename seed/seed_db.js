@@ -2,6 +2,7 @@ var faker = require("faker");
 const mongoose = require("mongoose");
 const User = require("../models/User");
 const Record = require("../models/Record");
+const Order = require("../models/Order");
 require("dotenv").config();
 
 /** ENV VARIABLES **/
@@ -74,5 +75,14 @@ console.log("I shall seed");
   } catch (e) {
     console.error(e);
   }
+
+  console.log("I will purge all the old orders...");
+  try {
+    await Order.deleteMany({});
+    await console.log("Orders purged");
+  } catch (err) {
+    console.error(err);
+  }
+
   mongoose.connection.close();
 })();
