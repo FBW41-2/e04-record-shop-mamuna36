@@ -3,8 +3,6 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-const low = require("lowdb");
-const FileSync = require("lowdb/adapters/FileSync");
 const mongoose = require("mongoose");
 const getId = require("./middleware/getId");
 require("dotenv").config();
@@ -43,15 +41,6 @@ mongoose.connection.on("error", console.error);
 mongoose.connection.on("open", function () {
   console.log("Database connection established...");
 });
-
-/** SETTING UP LOWDB */
-const adapter = new FileSync("data/db.json");
-const db = low(adapter);
-db.defaults({
-  records: [],
-  users: [],
-  orders: [],
-}).write();
 
 /** REQUEST PARSERS */
 app.use(express.json());
