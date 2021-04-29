@@ -4,7 +4,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
-const getId = require("./middleware/getId");
+const getId = require("./middleware/getID");
 require("dotenv").config();
 
 /** ROUTERS */

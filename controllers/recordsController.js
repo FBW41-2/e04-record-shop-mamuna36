@@ -1,4 +1,4 @@
-const Record = require("../models/recordsModel");
+const Record = require("../models/Record");
 // get all records
 exports.getRecords = (req, res, next) => {
   // access db from global object   // select all records
