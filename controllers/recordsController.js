@@ -29,15 +29,10 @@ exports.deleteRecord = (req, res, next) => {
 // update one record
 exports.updateRecord = (req, res, next) => {
   const { id } = req.params;
-  Record.findByIdAndUpdate(
-    id,
-    { year: "2010" },
-    { new: true },
-    (err, entry) => {
-      if (err) return res.json({ error: err });
-      res.json(entry);
-    }
-  );
+  Record.findByIdAndUpdate(id, req.body, { new: true }, (err, entry) => {
+    if (err) return res.json({ error: err });
+    res.json(entry);
+  });
 };
 
 // create new record

@@ -29,15 +29,10 @@ exports.deleteUser = (req, res, next) => {
 // update one user
 exports.updateUser = (req, res, next) => {
   const { id } = req.params;
-  User.findByIdAndUpdate(
-    id,
-    { lastName: "Smith" },
-    { new: true },
-    (err, entry) => {
-      if (err) return res.json({ error: err });
-      res.json(entry);
-    }
-  );
+  User.findByIdAndUpdate(id, req.body, { new: true }, (err, entry) => {
+    if (err) return res.json({ error: err });
+    res.json(entry);
+  });
 };
 
 // create new user

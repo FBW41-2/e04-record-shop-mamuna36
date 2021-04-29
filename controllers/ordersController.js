@@ -29,15 +29,10 @@ exports.deleteOrder = (req, res, next) => {
 // update one order
 exports.updateOrder = (req, res, next) => {
   const { id } = req.params;
-  Order.findByIdAndUpdate(
-    id,
-    { quantity: "100" },
-    { new: true },
-    (err, entry) => {
-      if (err) return res.json({ error: err });
-      res.json(entry);
-    }
-  );
+  Order.findByIdAndUpdate(id, req.body, { new: true }, (err, entry) => {
+    if (err) return res.json({ error: err });
+    res.json(entry);
+  });
 };
 
 // create new order
