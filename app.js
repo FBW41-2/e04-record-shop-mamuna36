@@ -6,6 +6,8 @@ const logger = require("morgan");
 const low = require("lowdb");
 const FileSync = require("lowdb/adapters/FileSync");
 const mongoose = require("mongoose");
+const getId = require("./middleware/getId");
+require("dotenv").config();
 
 /** ROUTERS */
 const indexRouter = require("./routes/index");
@@ -20,15 +22,25 @@ const app = express();
 /** LOGGING */
 app.use(logger("dev"));
 
+/** ENV VARIABLES **/
+const dBURL = process.env.DB_URL;
+const dBPassword = process.env.DB_PASS;
+const dBUser = process.env.DB_USER;
+
 /**CONNECT TO DB */
-mongoose.connect("mongodb://localhost:27017/record-shop", {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true
-});
+mongoose.connect(
+  process.env.NODE_ENV == "test"
+    ? "mongodb://localhost:27017/record-shop"
+    : `mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`,
+  {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+  }
+);
 
 mongoose.connection.on("error", console.error);
-mongoose.connection.on("open", function() {
+mongoose.connection.on("open", function () {
   console.log("Database connection established...");
 });
 
@@ -38,7 +50,7 @@ const db = low(adapter);
 db.defaults({
   records: [],
   users: [],
-  orders: []
+  orders: [],
 }).write();
 
 /** REQUEST PARSERS */
@@ -46,6 +58,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(setCors);
+app.use(getId);
 
 /** STATIC FILES*/
 app.use(express.static(path.join(__dirname, "public")));
@@ -57,17 +70,17 @@ app.use("/records", recordsRouter);
 app.use("/orders", ordersRouter);
 
 /** ERROR HANDLING */
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   const error = new Error("Looks like something broke...");
   error.status = 400;
   next(error);
 });
 
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 500).send({
     error: {
-      message: err.message
-    }
+      message: err.message,
+    },
   });
 });
 

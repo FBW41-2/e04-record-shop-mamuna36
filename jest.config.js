@@ -1,6 +1,4 @@
 module.exports = {
-    testEnvironment: 'node',
-    coveragePathIgnorePatterns: [
-        "/node_modules/"
-    ]
-}
+  testEnvironment: "node",
+  coveragePathIgnorePatterns: ["/node_modules/"],
+};
