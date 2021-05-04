@@ -1,4 +1,6 @@
 const Record = require("../models/Record");
+const mysql = require("mysql");
+const { sqlconfig } = require("../app");
 // get all records
 exports.getRecords = (req, res, next) => {
   // access db from global object   // select all records
@@ -11,15 +13,17 @@ exports.getRecords = (req, res, next) => {
     searchField,
   } = req.query;
   Record.find(
-    { [searchField]: { $regex: search || "", $options: "i" } },
+    search || searchField
+      ? { [searchField]: { $regex: search || "", $options: "i" } }
+      : {},
     (err, records) => {
       if (err) return console.error(err);
       res.json(records);
     }
-  )
-    .limit(Number(recordsPerPage))
-    .skip(pageNumber * recordsPerPage)
-    .sort({ [sortField]: sortOrder });
+  );
+  // .limit(Number(recordsPerPage))
+  // .skip(pageNumber * recordsPerPage)
+  // .sort({ [sortField]: sortOrder });
 };
 
 // get specific record

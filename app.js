@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
 const getId = require("./middleware/getID");
+const mysql = require("mysql");
 require("dotenv").config();
 
 /** ROUTERS */
@@ -26,10 +27,10 @@ const dBPassword = process.env.DB_PASSWORD;
 const dBUser = process.env.DB_USER;
 
 /**CONNECT TO DB */
+const localDbURI = "mongodb://localhost:27017/record-shop";
+const atlasURI = `mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`;
 mongoose.connect(
-  process.env.NODE_ENV == "test"
-    ? "mongodb://localhost:27017/record-shop"
-    : `mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`,
+  process.env.NODE_ENV == "autograding" ? localDbURI : atlasURI,
   {
     useNewUrlParser: true,
     useCreateIndex: true,
@@ -41,7 +42,23 @@ mongoose.connection.on("error", console.error);
 mongoose.connection.on("open", function () {
   console.log("Database connection established...");
 });
-
+//connecting to mysql
+// var con = mysql.createConnection({
+//   host: "",
+//   user: "root",
+//   password: "",
+//   database: "mydb",
+// });
+// con.connect(function (err) {
+//   if (err) throw err;
+//   console.log("Connected!");
+//   var sql =
+//     "CREATE TABLE records(artist VARCHAR(255), albumname VARCHAR(255), year VARCHAR(255), price VARCHAR(255), id INT AUTO_INCREMENT PRIMARY KEY)";
+//   con.querry(sql, function (err, result) {
+//     if (err) throw err;
+//     console.log(result);
+//   });
+// });
 /** REQUEST PARSERS */
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -75,3 +92,4 @@ app.use(function (err, req, res, next) {
 
 /** EXPORT PATH */
 module.exports = app;
+// exports.sql = con;
