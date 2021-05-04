@@ -29,14 +29,11 @@ const dBUser = process.env.DB_USER;
 /**CONNECT TO DB */
 const localDbURI = "mongodb://localhost:27017/record-shop";
 const atlasURI = `mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`;
-mongoose.connect(
-  process.env.NODE_ENV == "autograding" ? localDbURI : atlasURI,
-  {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
-  }
-);
+mongoose.connect(process.env.NODE_ENV == dBURL ? localDbURI : atlasURI, {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
+});
 
 mongoose.connection.on("error", console.error);
 mongoose.connection.on("open", function () {
