@@ -29,7 +29,7 @@ const dBUser = process.env.DB_USER;
 /**CONNECT TO DB */
 const localDbURI = "mongodb://localhost:27017/record-shop";
 const atlasURI = `mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`;
-mongoose.connect(process.env.NODE_ENV == dBURL ? localDbURI : atlasURI, {
+mongoose.connect(process.env.DB_URL ? atlasURI : localDbURI, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,
