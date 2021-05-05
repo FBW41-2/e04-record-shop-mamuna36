@@ -22,11 +22,11 @@
       "points": 4
     },
     {
-      "name": "cors endpoints",
+      "name": "cors",
       "setup": "npm install",
       "run": "npm test -- __tests__/cors.js",
       "timeout": 10,
-      "points": 4
+      "points": 2
     }
   ]
 }
