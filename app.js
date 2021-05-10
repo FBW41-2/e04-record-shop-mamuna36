@@ -4,6 +4,9 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const mongoose = require("mongoose");
+const getId = require("./middleware/getID");
+const mysql = require("mysql");
+require("dotenv").config();
 
 /** ROUTERS */
 const indexRouter = require("./routes/index");
@@ -18,23 +21,47 @@ const app = express();
 /** LOGGING */
 app.use(logger("dev"));
 
+/** ENV VARIABLES **/
+const dBURL = process.env.DB_URL;
+const dBPassword = process.env.DB_PASSWORD;
+const dBUser = process.env.DB_USER;
+
 /**CONNECT TO DB */
-mongoose.connect("mongodb://localhost:27017/record-shop", {
+const localDbURI = "mongodb://localhost:27017/record-shop";
+const atlasURI = `mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`;
+mongoose.connect(process.env.DB_URL ? atlasURI : localDbURI, {
   useNewUrlParser: true,
   useCreateIndex: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 });
 
 mongoose.connection.on("error", console.error);
-mongoose.connection.on("open", function() {
+mongoose.connection.on("open", function () {
   console.log("Database connection established...");
 });
-
+//connecting to mysql
+// var con = mysql.createConnection({
+//   host: "",
+//   user: "root",
+//   password: "",
+//   database: "mydb",
+// });
+// con.connect(function (err) {
+//   if (err) throw err;
+//   console.log("Connected!");
+//   var sql =
+//     "CREATE TABLE records(artist VARCHAR(255), albumname VARCHAR(255), year VARCHAR(255), price VARCHAR(255), id INT AUTO_INCREMENT PRIMARY KEY)";
+//   con.querry(sql, function (err, result) {
+//     if (err) throw err;
+//     console.log(result);
+//   });
+// });
 /** REQUEST PARSERS */
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(setCors);
+app.use(getId);
 
 /** STATIC FILES*/
 app.use(express.static(path.join(__dirname, "public")));
@@ -46,17 +73,17 @@ app.use("/records", recordsRouter);
 app.use("/orders", ordersRouter);
 
 /** ERROR HANDLING */
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   const error = new Error("Looks like something broke...");
   error.status = 400;
   next(error);
 });
 
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   res.status(err.status || 500).send({
     error: {
-      message: err.message
-    }
+      message: err.message,
+    },
   });
 });
 
