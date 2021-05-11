@@ -13,7 +13,7 @@ const {
 router
   .route("/")
   .get(getUsers)
-  .post(userValidators, generateValidator, addUser);
+  .post(generateValidator(userValidators), addUser);
 
 router.route("/:id").get(getUser).delete(deleteUser).put(updateUser);
 
