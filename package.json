@@ -6,7 +6,9 @@
     "start": "node ./bin/www",
     "watch": "DEBUG=record-shop:* nodemon --inspect ./bin/www --ignore 'data/*'",
     "seed": "node seed/seed_db.js",
-    "purge": "node seed/purge_db.js"
+    "purge": "node seed/purge_db.js",
+    "test": "jest --runInBand --verbose",
+"test-watch": "jest --runInBand --verbose --watch"
   },
   "dependencies": {
     "check-password-strength": "^2.0.3",
