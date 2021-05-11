@@ -9,6 +9,7 @@
     "purge": "node seed/purge_db.js"
   },
   "dependencies": {
+    "check-password-strength": "^2.0.3",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^9.0.1",

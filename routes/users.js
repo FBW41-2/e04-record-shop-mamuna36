@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { body } = require("express-validator");
-const userValidators = [body("email").isEmail()];
-
+const userValidators = require("../lib/userRules");
 const {
   getUsers,
   getUser,
