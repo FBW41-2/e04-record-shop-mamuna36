@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userValidators = require("../lib/validation/userRules");
-const validator = require("../middleware/validator");
+const generateValidator = require("../middleware/validator");
 const {
   getUsers,
   getUser,
@@ -10,7 +10,10 @@ const {
   addUser,
 } = require("../controllers/usersController");
 
-router.route("/").get(getUsers).post(userValidators, validator, addUser);
+router
+  .route("/")
+  .get(getUsers)
+  .post(userValidators, generateValidator, addUser);
 
 router.route("/:id").get(getUser).delete(deleteUser).put(updateUser);
 
