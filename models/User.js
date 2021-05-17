@@ -1,38 +1,37 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const Address = require("./Address");
 
 const UserSchema = new Schema(
   {
     firstName: {
       type: String,
-      required: true
+      required: true,
     },
     lastName: {
       type: String,
-      required: true
+      required: true,
     },
     email: {
       type: String,
-      required: true
+      required: true,
     },
     password: {
       type: String,
-      required: true
+      required: true,
+      select: false,
     },
-    address: Address
   },
   {
     toObject: {
-      virtuals: true
+      virtuals: true,
     },
     toJSON: {
-      virtuals: true
-    }
+      virtuals: true,
+    },
   }
 );
 
-UserSchema.virtual("fullName").get(function() {
+UserSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
 
