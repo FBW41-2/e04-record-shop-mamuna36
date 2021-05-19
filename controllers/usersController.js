@@ -2,7 +2,9 @@ const User = require("../models/User");
 const createError = require("http-errors");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
+// get all users
 exports.getUsers = async (req, res, next) => {
   try {
     const users = await User.find()
@@ -15,6 +17,7 @@ exports.getUsers = async (req, res, next) => {
   }
 };
 
+// get one specific user
 exports.getUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id).select("-password -__v");
@@ -25,6 +28,7 @@ exports.getUser = async (req, res, next) => {
   }
 };
 
+// delete one specific user
 exports.deleteUser = async (req, res, next) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id);
@@ -35,8 +39,17 @@ exports.deleteUser = async (req, res, next) => {
   }
 };
 
+// updating one user
 exports.updateUser = async (req, res, next) => {
+  const token = req.headers.key;
   const userData = req.body;
+  // is the request coming from a logged in user?
+  // Find the user with provided key, the convention is send the key in the header
+  const loggedInUser = await User.findOne({ token: token });
+  console.log("loggedInUser", loggedInUser);
+  if (!token || !loggedInUser) {
+    return next({ message: "Permission denied. You have to log in." });
+  }
   //encrypt password
   userData.password = await bcrypt.hash(userData.password, 10);
   try {
@@ -51,6 +64,7 @@ exports.updateUser = async (req, res, next) => {
   }
 };
 
+// adding a new user
 exports.addUser = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -62,23 +76,34 @@ exports.addUser = async (req, res, next) => {
     //encrypt password
     user.password = await bcrypt.hash(user.password, 10);
     await user.save();
-    res.status(200).send(user);
+    res.set({ "x-auth": token }).status(200).send(user);
   } catch (e) {
     next(e);
   }
 };
+
+// login user
 exports.loginUser = async (req, res, next) => {
   const userCredentials = req.body;
-  const email = req.body.email;
-  const password = req.body.password;
+  const inputPassword = userCredentials.password;
   // get user from database
-  const foundUser = await User.findOne({ email: email }).select("+password");
+  const foundUser = await User.findOne({ email: userCredentials.email }).select(
+    "+password"
+  );
+  const password = foundUser.password;
+  const isCorrectPassword = await bcrypt.compare(inputPassword, password);
   console.log(foundUser);
   if (!foundUser) {
     res.json({ error: "User not found" });
-  } else if (await bcrypt.compare(password, foundUser.password)) {
-    res.json({ status: "logged in", user: foundUser });
+  } else if (isCorrectPassword) {
+    //generate random string using built in library crypto
+    const token = crypto.randomBytes(30).toString("hex");
+    // store key in our db entry
+    await User.findByIdAndUpdate(foundUser.id, { token });
+    res.json({ status: "logged in", token }).header("x-auth", token);
+    //.send(foundUser);
   } else {
     res.json({ error: "Wrong password" });
   }
+  next();
 };

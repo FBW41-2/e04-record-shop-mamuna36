@@ -18,6 +18,6 @@ router
   .post(validateInputs(userValidationRules), addUser);
 
 router.route("/login").post(loginUser);
-router.route("/:id").get(getUser).delete(deleteUser).put(updateUser);
+router.route("/:id").get(getUser).delete(deleteUser).put(updateUser, getUsers);
 
 module.exports = router;

@@ -21,6 +21,9 @@ const UserSchema = new Schema(
       required: true,
       select: false,
     },
+    token: {
+      type: String,
+    },
   },
   {
     toObject: {
@@ -39,12 +42,16 @@ const UserSchema = new Schema(
 
 UserSchema.pre("findOneAndUpdate", async function (next) {
   console.log("User", this);
-  this.password = await bcrypt.hash(this.password || this._update.password, 10);
+  if (this._update.password)
+    this._update.password = await bcrypt.hash(this._update.password, 10);
   next();
 });
 
 UserSchema.virtual("fullName").get(function () {
   return `${this.firstName} ${this.lastName}`;
 });
-
+UserSchema.methods.generateAuthToken = function () {
+  const user = this;
+  const access = "auth";
+};
 module.exports = mongoose.model("User", UserSchema);
