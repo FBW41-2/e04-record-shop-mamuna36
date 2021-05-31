@@ -33,7 +33,7 @@ exports.deleteRecord = async (req, res, next) => {
 exports.updateRecord = async (req, res, next) => {
   try {
     const record = await Record.findByIdAndUpdate(req.params.id, req.body, {
-      new: true
+      new: true,
     });
     if (!record) throw new createError.NotFound();
     res.status(200).send(record);

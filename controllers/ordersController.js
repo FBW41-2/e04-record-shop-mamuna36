@@ -36,7 +36,7 @@ exports.deleteOrder = async (req, res, next) => {
 exports.updateOrder = async (req, res, next) => {
   try {
     const order = await Order.findByIdAndUpdate(req.params.id, req.body, {
-      new: true
+      new: true,
     });
     if (!order) throw new createError.NotFound();
     res.status(200).send(order);

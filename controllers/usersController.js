@@ -3,6 +3,7 @@ const createError = require("http-errors");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const tokens = {};
 
 // get all users
 exports.getUsers = async (req, res, next) => {
@@ -41,10 +42,11 @@ exports.deleteUser = async (req, res, next) => {
 
 // updating one user
 exports.updateUser = async (req, res, next) => {
-  const token = req.headers.key;
+  const token = req.headers["x-auth"];
   const userData = req.body;
   // is the request coming from a logged in user?
   // Find the user with provided key, the convention is send the key in the header
+  //const loggedInUser = await User.findOne({ token: token });
   const loggedInUser = await User.findOne({ token: token });
   console.log("loggedInUser", loggedInUser);
   if (!token || !loggedInUser) {
@@ -53,12 +55,13 @@ exports.updateUser = async (req, res, next) => {
   //encrypt password
   userData.password = await bcrypt.hash(userData.password, 10);
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const user = await User.findByIdAndUpdate(req.params.id, userData, {
       new: true,
       runValidators: true,
     });
     if (!user) throw new createError.NotFound();
-    res.status(200).send(user);
+    next();
+    //res.status(200).send(user);
   } catch (e) {
     next(e);
   }
@@ -73,10 +76,12 @@ exports.addUser = async (req, res, next) => {
     }
 
     const user = new User(req.body);
+    const token = crypto.randomBytes(30).toString("hex");
     //encrypt password
     user.password = await bcrypt.hash(user.password, 10);
+    user.token = token;
     await user.save();
-    res.set({ "x-auth": token }).status(200).send(user);
+    res.set({ "x-auth": token }).status(200).json(user);
   } catch (e) {
     next(e);
   }
@@ -98,12 +103,15 @@ exports.loginUser = async (req, res, next) => {
   } else if (isCorrectPassword) {
     //generate random string using built in library crypto
     const token = crypto.randomBytes(30).toString("hex");
+
     // store key in our db entry
-    await User.findByIdAndUpdate(foundUser.id, { token });
-    res.json({ status: "logged in", token }).header("x-auth", token);
-    //.send(foundUser);
+    await User.findByIdAndUpdate(user.id, { token: token });
+    //await User.findByIdAndUpdate(foundUser.id, { token });
+    res
+      .set({ "x-auth": token })
+      .json({ status: "logged in", token: token })
+      .send(foundUser);
   } else {
     res.json({ error: "Wrong password" });
   }
-  next();
 };

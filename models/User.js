@@ -24,6 +24,11 @@ const UserSchema = new Schema(
     token: {
       type: String,
     },
+    role: {
+      type: String,
+      required: true,
+      enum: ["Admin", "User"],
+    },
   },
   {
     toObject: {
