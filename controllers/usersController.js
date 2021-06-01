@@ -7,10 +7,7 @@ const crypto = require("crypto");
 // get all users
 exports.getUsers = async (req, res, next) => {
   try {
-    const users = await User.find()
-      .select("-password -__v")
-      .sort("lastName")
-      .limit(5);
+    const users = await User.find().select("-password -__v").sort("lastName");
     res.status(200).send(users);
   } catch (e) {
     next(e);
