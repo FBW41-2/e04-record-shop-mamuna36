@@ -10,6 +10,7 @@
     "test": "jest --runInBand --verbose"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.4.4",
     "babel-jest": "^26.6.3",
     "bcrypt": "^5.0.1",
     "check-password-strength": "^2.0.3",

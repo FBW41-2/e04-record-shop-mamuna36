@@ -16,6 +16,31 @@ const UserSchema = new Schema(
       type: String,
       required: true,
     },
+    emailToken: {
+      type: String,
+    },
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    role: {
+      type: String,
+      enum: ["Admin", "User"],
+      required: true,
+      default: "User",
+    },
+    tokens: [
+      {
+        access: {
+          type: String,
+          required: true,
+        },
+        token: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     password: {
       type: String,
       required: true,

@@ -3,7 +3,38 @@ const createError = require("http-errors");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// const msg = {
+//   to: "mamuna_anwar@hotmail.com",
+//   from: "mamuna.anwar@gmail.com", // Use the email address or domain you verified above
+//   subject: "Sending my first email",
+//   text: "and easy to do anywhere, even with Node.js",
+//   html: "<strong>and easy to do anywhere, even with Node.js</strong>",
+// };
+// //ES6
+// sgMail.send(msg).then(
+//   () => {},
+//   (error) => {
+//     console.error(error);
 
+//     if (error.response) {
+//       console.error(error.response.body);
+//     }
+//   }
+// );
+// //ES8
+// (async () => {
+//   try {
+//     await sgMail.send(msg);
+//   } catch (error) {
+//     console.error(error);
+
+//     if (error.response) {
+//       console.error(error.response.body);
+//     }
+//   }
+// })();
 // get all users
 exports.getUsers = async (req, res, next) => {
   try {
@@ -72,13 +103,44 @@ exports.addUser = async (req, res, next) => {
     const user = new User(req.body);
     //encrypt password
     user.password = await bcrypt.hash(user.password, 10);
+    // generate token
+    const emailToken = crypto.randomBytes(20).toString("hex");
+
+    // store token
+    user.emailToken = emailToken;
+    const email = user.email;
+
     await user.save();
-    res.set({ "x-auth": token }).status(200).send(user);
+    // define email
+    const msg = {
+      to: email,
+      from: "mamuna.anwar@gmail.com", // Use the email address or domain you verified above
+      subject: "Greetings",
+      text: `Please click this link to verify your email address: ${process.env.SERVER_URL}/users/verify/${emailToken}`,
+    };
+
+    // send email
+    await sgMail.send(msg);
+    res.set({ "x-auth": emailToken }).status(200).send(user);
   } catch (e) {
     next(e);
   }
 };
-
+//controller to verify email
+exports.verifyEmail = async (req, res) => {
+  //here use the same variable that is used in the verify route
+  const { emailToken } = req.params;
+  console.log("verify email");
+  try {
+    // find user that has this token
+    const user = await User.findOne({ emailToken: emailToken });
+    user.emailVerified = true;
+    await user.save();
+    res.send("Your email address has been verified.");
+  } catch (err) {
+    console.error(err);
+  }
+};
 // login user
 exports.loginUser = async (req, res, next) => {
   const userCredentials = req.body;
@@ -104,3 +166,11 @@ exports.loginUser = async (req, res, next) => {
   }
   next();
 };
+//verify email
+// exports.verifyEmail = (req, res) => {
+//   const { token } = req.params
+//   try {
+//     //find the user with given token
+//     User.find
+//   }
+//  }

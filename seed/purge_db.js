@@ -3,17 +3,21 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 
 console.log("I shall purge all users");
+/** ENV VARIABLES **/
+const dBURL = process.env.DB_URL;
+const dBPassword = process.env.DB_PASSWORD;
+const dBUser = process.env.DB_USER;
 
-(async function() {
+(async function () {
   /**CONNECT TO DB */
-  mongoose.connect("mongodb://localhost:27017/record-shop", {
+  mongoose.connect(`mongodb+srv://${dBUser}:${dBPassword}@${dBURL}`, {
     useNewUrlParser: true,
     useCreateIndex: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   });
 
   mongoose.connection.on("error", console.error);
-  mongoose.connection.on("open", function() {
+  mongoose.connection.on("open", function () {
     console.log("Database connection established...");
   });
 

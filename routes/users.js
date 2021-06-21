@@ -10,6 +10,7 @@ const {
   deleteUser,
   addUser,
   loginUser,
+  verifyEmail,
 } = require("../controllers/usersController");
 
 router
@@ -19,5 +20,6 @@ router
 
 router.route("/login").post(loginUser);
 router.route("/:id").get(getUser).delete(deleteUser).put(updateUser, getUsers);
+router.get("/verify/:emailToken", verifyEmail);
 
 module.exports = router;
